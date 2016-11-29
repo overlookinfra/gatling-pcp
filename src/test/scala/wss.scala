@@ -9,7 +9,10 @@ class PCPConnections extends Simulation {
     .exec(ws("Connect WS").open("/pcp"))
     .exec(ws("Association")
       .sendBytes(pcp.associate_request("pcp://client01.example.com/test01"))
-      .check(wsAwait.within(30).until(1)))
+      // Checks don't work with binary messages. This may be fixed in Gatling 3.
+      // We also plan to switch to text-based messages. Punt for now.
+      //.check(wsAwait.within(10).until(1))
+      )
     .exec(ws("Close WS").close)
 
   setUp(
