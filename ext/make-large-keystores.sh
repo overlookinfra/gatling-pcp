@@ -32,7 +32,7 @@ do
           -passout pass:foobarbaz
   keytool -importkeystore \
           -storepass foobarbaz \
-          -destkeystore src/test/resources/keystore.ks \
+          -destkeystore src/test/resources/$certname.ks \
           -srckeystore $certname.p12 \
           -srcstorepass foobarbaz \
           -srcstoretype PKCS12 \
