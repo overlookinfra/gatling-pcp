@@ -32,6 +32,6 @@ class ThroughputV1 extends Simulation {
     .exec(ws("Close WS").close)
 
   setUp(
-    scn.inject(atOnceUsers(1))
+    scn.inject(atOnceUsers(10))
   ).protocols(httpConf)
 }
