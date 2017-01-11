@@ -2,20 +2,24 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
 
-class PCPConnections extends Simulation {
+class ConnectionsV1 extends Simulation {
   val httpConf = http.wsBaseURL("wss://broker.example.com:8142")
 
-  var count = 0
-  def counter(): Int = { count += 1; count }
-  val feeder = Iterator.continually(Map("bytes" -> (pcp.associate_request("pcp://client01.example.com/"+counter()))))
+  var count1 = 0
+  var count2 = 0
+  def counter1(): Int = { count1 += 1; count1 }
+  def counter2(): Int = { count2 += 1; count2 }
+  val feeder = Iterator.continually(Map(
+    "client_type" -> counter1(),
+    "bytes" -> (pcp.associate_request("pcp://client01.example.com/"+counter2()))))
 
   val scn = scenario("ConnectWebSocket")
     .feed(feeder)
-    .exec(ws("Connect WS").open("/pcp"))
+    // Specify client_type in URI to work with pcp-broker 1.0
+    .exec(ws("Connect WS").open("/pcp/${client_type}"))
     .exec(
       ws("Association").sendBytes("${bytes}")
       // Checks don't work with binary messages. This may be fixed in Gatling 3.
-      // We also plan to switch to text-based messages. Punt for now.
       //.check(wsAwait.within(10).until(1))
     )
     // Leave all connections open until the end.
